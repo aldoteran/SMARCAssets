@@ -2824,7 +2824,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6973104708590339325}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c1407c79a8032a329313e14db655bcb, type: 3}
   m_Name: 
@@ -2845,7 +2845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee95b5d1413e86d4bed3e951d06a085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topic: Lidar/gps
+  topic: sensors/gps
   NotARobot: 0
   frequency: 8
   ignoreSensorState: 0
@@ -3113,7 +3113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32ccbfb20e694c726875aa7c68c0bca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topic: Lidar/imu
+  topic: sensors/imu
   NotARobot: 0
   frequency: 50
   ignoreSensorState: 0
