@@ -3510,6 +3510,11 @@ PrefabInstance:
       propertyPath: flipVertically
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2481727958506090523, guid: e327e9efb86338144b9b4afc3b64579b,
+        type: 3}
+      propertyPath: flipHorizontally
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2548865424984193880, guid: e327e9efb86338144b9b4afc3b64579b,
         type: 3}
       propertyPath: m_LocalPosition.x
