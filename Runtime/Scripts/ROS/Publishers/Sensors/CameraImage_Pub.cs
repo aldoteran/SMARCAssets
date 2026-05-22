@@ -27,7 +27,6 @@ namespace ROS.Publishers
             var h = DataSource.textureHeight;
             var w = DataSource.textureWidth;
 
-            ROSMsg.data = new byte[h * w * BYTES_PER_PIXEL];
             ROSMsg.encoding = "rgb8";
             ROSMsg.height = (uint)h;
             ROSMsg.width  = (uint)w;
@@ -38,24 +37,35 @@ namespace ROS.Publishers
 
         protected override void UpdateMessage()
         {
-            int h = (int)ROSMsg.height;
-            int w = (int)ROSMsg.width;
+            int h = DataSource.textureHeight;
+            int w = DataSource.textureWidth;
 
-            // 1) Bulk copy from Unity texture to ROS buffer (no per-byte loop)
+            // Use a fresh payload/message per frame. ROSConnection queues message
+            // objects and serializes them asynchronously, so queued byte arrays must
+            // never be mutated by a later UpdateMessage().
             NativeArray<byte> src = DataSource.image.GetRawTextureData<byte>();
-            if (ROSMsg.data == null || ROSMsg.data.Length != src.Length)
-                ROSMsg.data = new byte[src.Length];
+            var data = new byte[src.Length];
 
-            src.CopyTo(ROSMsg.data); // fast memcpy-like copy
+            src.CopyTo(data); // fast memcpy-like copy
 
-            // 2) Optional flips (done in-place, minimal extra allocs)
+            // Optional flips are applied once, before the immutable frame is queued.
             if (flipVertically)
-                FlipImageVerticallyInPlace(ROSMsg.data, w, h, BYTES_PER_PIXEL);
+                FlipImageVerticallyInPlace(data, w, h, BYTES_PER_PIXEL);
 
             if (flipHorizontally)
-                FlipImageHorizontallyInPlace(ROSMsg.data, w, h, BYTES_PER_PIXEL);
+                FlipImageHorizontallyInPlace(data, w, h, BYTES_PER_PIXEL);
 
+            ROSMsg = new ImageMsg
+            {
+                height = (uint)h,
+                width = (uint)w,
+                encoding = "rgb8",
+                is_bigendian = 0,
+                step = (uint)(BYTES_PER_PIXEL * w),
+                data = data
+            };
             ROSMsg.header.stamp = new TimeStamp(Clock.time);
+            ROSMsg.header.frame_id = $"{robot_name}/{DataSource.linkName}";
         }
 
         // --- Helpers ---
