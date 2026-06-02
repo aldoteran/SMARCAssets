@@ -11,10 +11,12 @@ namespace Evolo
     {
         [Header("Targets")]
         public float Speed;
+        [Tooltip("Commanded yaw rate in radians per second. This matches ROS Twist angular velocity units.")]
         public float YawRate;
         public float Altitude = 1f;
         
         [Header("Limits")]
+        [Tooltip("Maximum commanded yaw rate in radians per second.")]
         public float MaxYawRate = 5f;
         public float MaxSpeed = 7f;
         public float MaxAltitude = 2f;
@@ -47,11 +49,14 @@ namespace Evolo
         void FixedUpdate()
         {
             Speed = Mathf.Clamp(Speed, -MaxSpeed, MaxSpeed);
-            horizCtrl.TargetVelocity = new Vector3(0, 0, Mathf.Clamp(Speed, -MaxSpeed, MaxSpeed));
+            horizCtrl.TargetVelocity = new Vector3(0, 0, Speed);
             twistLinear.z = Speed;
+
             YawRate = Mathf.Clamp(YawRate, -MaxYawRate, MaxYawRate);
             twistAngular.y = YawRate;
-            attCtrl.TargetYawRate = Mathf.Clamp(YawRate, -MaxYawRate, MaxYawRate);
+            // The AttitudeController expects degrees per second, while GenericTwistCommand_Sub provides rad/s.
+            attCtrl.TargetYawRate = YawRate * Mathf.Rad2Deg;
+
             Altitude = Mathf.Clamp(Altitude, 0, MaxAltitude);
             altCtrl.TargetAltitude = Altitude;
         }
